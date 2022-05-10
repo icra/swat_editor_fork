@@ -1,0 +1,44 @@
+lum.dtl: add 2 irrigation sources tables
+4
+
+name                     conds      alts      acts  
+irr_str8_r_a_u           3         3         3  	!check reservoir level, then check aquifer depth, then unlimited source
+var                        obj   obj_num           lim_var            lim_op     lim_const      	alt1  	alt2	alt3
+w_stress             hru         0              null                 -       0.80000         		< 	<	<	!water stress < 0.8
+vol                        res         1              pvol                 *       0.75000                      	>	<	<	!res volume > 0.75*principle volume
+aqu_dep	aqu         1              null                 -       50.0000                      		-	<	>	!aquifer depth < 50m below surface
+act_typ                    obj   obj_num              name            option         const      const2    fp  	outcome           
+irrigate                   res         1         sprinkler     sprinkler_ilm      25.00000    20.00000   null   y	n   	n
+irrigate                   aqu         1       sprinkler     sprinkler_ilm      25.00000    20.00000   null   n	y   	n
+irrigate                   unlim       0      sprinkler     sprinkler_ilm      25.00000    20.00000   null   n	n   	y
+
+name                     conds      alts      acts  
+irr_str8_a_r_u           3         3         3  	!check reservoir level, then check aquifer depth, then unlimited source
+var                        obj   obj_num           lim_var            lim_op     lim_const      	alt1  	alt2	alt3
+w_stress             hru         0              null                 -       0.80000         		< 	<	<	!water stress < 0.8
+aqu_dep	aqu         1              null                 -       50.0000                      		<	>	>	!aquifer depth < 50m below surface
+vol                        res         1              pvol                 *       0.75000                      	-	>	<	!res volume > 0.75*principle volume
+act_typ                    obj   obj_num              name            option         const      const2    fp  	outcome           
+irrigate                   aqu         1       sprinkler     sprinkler_ilm      25.00000    20.00000   null   y	n   	n
+irrigate                   res         1         sprinkler     sprinkler_ilm      25.00000    20.00000   null   n	y   	n
+irrigate                   unlim       0      sprinkler     sprinkler_ilm      25.00000    20.00000   null   n	n   	y
+
+name                     conds      alts      acts  
+irr_str8_res_aqu           3         2         2  	!check reservoir level, then check aquifer depth
+var                        obj   obj_num           lim_var            lim_op     lim_const      	alt1  	alt2
+w_stress             hru         0              null                 -       0.80000         		< 	<	!water stress < 0.8
+vol                        res         1              pvol                 *       0.75000                      	>	<	!res volume > 0.75*principle volume
+aqu_dep	aqu         1              null                 -       50.0000                      		-	<	!aquifer depth < 50m below surface
+act_typ                    obj   obj_num              name            option         const      const2    fp  	outcome           
+irrigate                   res         1         sprinkler     sprinkler_ilm      25.00000    20.00000   null   y	n  
+irrigate                   aqu         1       sprinkler     sprinkler_ilm      25.00000    20.00000   null   n	y  
+
+name                     conds      alts      acts  
+irr_str8_aqu_res           3         2         2  	!check reservoir level, then check aquifer depth
+var                        obj   obj_num           lim_var            lim_op     lim_const      	alt1  	alt2
+w_stress             hru         0              null                 -       0.80000         		< 	<	!water stress < 0.8
+aqu_dep	aqu         1              null                 -       50.0000                      		<	>	!aquifer depth < 50m below surface
+vol                        res         1              pvol                 *       0.75000                      	-	>	!res volume > 0.75*principle volume
+act_typ                    obj   obj_num              name            option         const      const2    fp  	outcome           
+irrigate                   aqu         1       sprinkler     sprinkler_ilm      25.00000    20.00000   null   y	n  
+irrigate                   res         1         sprinkler     sprinkler_ilm      25.00000    20.00000   null   n	y  

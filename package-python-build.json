@@ -1,0 +1,73 @@
+{
+	"build": {
+		"appId": "TAMU.SWATPlusEditor",
+		"artifactName": "${name}-installer-${version}.${ext}",
+		"productName": "SWATPlusEditor",
+		"publish": [
+			{
+				"provider": "generic",
+				"url": "https://plus.swat.tamu.edu/downloads/editor/"
+			}
+		],
+		"win": {
+			"target": "nsis",
+			"icon": "release/build/icons/ico/256x256.ico",
+			"asar": true,
+			"asarUnpack": [
+				"api",
+				"swat_exe",
+				"swatplus_vardefs.sqlite",
+				"appsettings.json"
+			]
+		},
+		"nsis": {
+			"oneClick": true,
+			"allowToChangeInstallationDirectory": false,
+			"include": "release/installer.nsh",
+			"runAfterFinish": false
+		},
+		"linux": {
+			"target": "tar.gz",
+			"asar": true,
+			"asarUnpack": [
+				"api",
+				"swat_exe",
+				"swatplus_vardefs.sqlite",
+				"appsettings.json"
+			],
+			"executableName": "SWATPlusEditor",
+			"artifactName": "${name}-${version}.${ext}"
+		},
+		"mac": {
+			"target": "default",
+			"icon": "release/build/icons/ico/256x256.ico",
+			"asar": true,
+			"asarUnpack": [
+				"api",
+				"swat_exe",
+				"swatplus_vardefs.sqlite",
+				"appsettings.json"
+			]
+		},
+		"appImage": {
+			"license": "license.txt",
+			"artifactName": "${name}-${version}.${ext}",
+			"category": "Science"
+		},
+		"directories": {
+			"buildResources": "release/build",
+			"output": "release/dist"
+		},
+		"files": [
+			"**/*",
+			"!build/*",
+			"!config/*",
+			"!src/*",
+			"!api_dist/*",
+			"!data/*",
+			"!release/*",
+			"!.git/*",
+			"!.vscode/*"
+		]
+	}
+}

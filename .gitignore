@@ -1,0 +1,39 @@
+.DS_Store
+node_modules
+/dist
+
+# local env files
+.env.local
+.env.*.local
+
+# Log files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Editor directories and files
+.idea
+.vscode
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+__pycache__/
+*.py[cod]
+.sass-cache/
+api/.idea/
+api/__pycache__/
+api/build/
+api/dist/
+api_dist/
+docs/.idea/
+data/downloads/
+.idea/
+release/dist
+release/output
+*.spec
+venv/
+api/testing.py
+*.log
