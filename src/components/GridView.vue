@@ -489,6 +489,7 @@ export default {
 			try {
 				let url = this.isNullOrEmpty(this.deleteApiUrl) ? this.apiUrl : this.deleteApiUrl;
 				const response = await this.$http.delete(`${url}/${this.page.delete.id}/${this.projectDbUrl}`);
+				console.log(response)
 				this.log(response);
 				this.page.delete.show = false;
 				this.table.currentPage = 1;

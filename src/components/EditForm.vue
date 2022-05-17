@@ -218,6 +218,7 @@ export default {
 		}
     },
     async created() {
+		console.log(this.apiUrl)
 		if (this.currentProjectSupported) await this.get();
 	},
 	methods: {
@@ -228,9 +229,9 @@ export default {
 			}
             else if (this.isUpdate){
 				if (this.noId){
-					console.log(this.$http.put(this.apiUrl + '/' + this.projectDbUrl, data))
+					return this.$http.put(this.apiUrl + '/' + this.projectDbUrl, data)
 				} else{
-					return this.$http.put(this.apiUrl + '/' + this.item.id + '/' + this.projectDbUrl, data);
+					return this.$http.put(this.apiUrl + '/' + this.item.id + '/' + this.projectDbUrl, data)
 				}
 			} else {
 				return this.$http.post(this.apiUrl + '/post/' + this.projectDbUrl, data)

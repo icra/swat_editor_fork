@@ -45,7 +45,7 @@ class SwatPlusShutdownApi(Resource):
 list_params = 'list/<everything:project_db>'
 post_params = 'post/<everything:project_db>'
 get_params = '<id>/<everything:project_db>'
-get_2_id_params = '<id>/<dataId>/<everything:project_db>'			#ICRA Joan Saló
+get_2_id_params = '<id>/<dataId>/<everything:project_db>'	#ICRA Joan Saló
 
 many_params = 'many/<everything:project_db>'
 datasets_get_name_params = 'datasets/<name>/<everything:datasets_db>'

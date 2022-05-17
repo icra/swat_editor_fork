@@ -13,8 +13,8 @@
 		<edit-form show-range is-update hide-name
 			:item="item"
 			:vars="vars"
-			api-url="recall_pollutants/data/item/post"
-			:redirect-route="`/edit/recall/edit/${$route.params.id}`" redirect-path  :no-id="true"/>
+			:api-url="apiUrl"
+			:redirect-route="`/edit/recall/edit/${$route.params.id}`" redirect-path  no-id/>
 	</project-container>
 </template>
 
@@ -42,7 +42,8 @@ export default {
 				name: null,
 				rec_typ: null,
 				rec_typ_name: null
-			}
+			},
+			apiUrl: ""
 		}
 	},
 	async created() {
@@ -65,9 +66,9 @@ export default {
 
             try {
 				const response = await this.$http.get(`${this.paths.data}/${item.connect.id}/${this.$route.params.dataId}/${this.projectDbUrl}`);
+				this.apiUrl = `${this.paths.data}/${item.connect.id}/${this.$route.params.dataId}`
 				this.item = response.data;
-				this.item.recall_rec_id = this.item.recall_rec;
-				this.log(this.item);
+				this.item.recall_rec_id = item.props.id;
 
 				const response2 = await this.$http.get(`vars/${this.paths.vars}/${this.appPath}`);
 				this.vars = response2.data
@@ -84,7 +85,8 @@ export default {
 						default_value: 0,
 						default_text: "",
 						units: "",
-						description: pollutant.description
+						description: pollutant.description,
+						recall_rec_id: 0,
 					}
 					this.vars[pollutant.name] = obj
 				}

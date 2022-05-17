@@ -350,7 +350,9 @@ def group_pollutants(project_db, items):
 			'mo': l[0]['mo'],
 			'day_mo': l[0]['day_mo'],
 			'yr': l[0]['yr'],
-			'id': i
+			'id': i,
+			'name_to_id_recall_pollutants_dat': {}
+
 		}
 		for pollutant in l:
 			#Acces a base de dades, agafem el nom (codi) del contaminant
@@ -362,6 +364,7 @@ def group_pollutants(project_db, items):
 
 			#obj[pollutant["pollutants_pth"]] = pollutant["load"]
 			obj[pollutant_pth['name']] = pollutant["load"]
+			obj['name_to_id_recall_pollutants_dat'][pollutant_pth['id']] = pollutant["id"]
 
 		return obj
 
@@ -415,14 +418,15 @@ def get_pollutants_ids_from_names(project_db):
 
 
 #D'una crida amb els contamintans junts, et genera les crides per fer els posts
-def separate_pollutants_dat(project_db, add_id = False):
+def separate_pollutants_dat(project_db):
 	args = get_recall_pollutants_dat_args(project_db)
 	pollutants_translation = get_pollutants_ids_from_names(project_db)
 	pollutants = []
 
+
 	for key in pollutants_translation.keys():
 		obj = {
-			'recall_rec': args['recall_rec_id'],
+			'recall_rec_id': args['recall_rec_id'],
 			'pollutants_pth': pollutants_translation[key],
 			'jday': args['jday'],
 			'mo': args['mo'],
@@ -430,11 +434,29 @@ def separate_pollutants_dat(project_db, add_id = False):
 			'yr': args['yr'],
 			'load': args[key],
 		}
-		if add_id:
-			objs['id']: key
 
 		pollutants.append(obj)
 	return pollutants
+
+def register_is_unique(args):
+	return len(Recall_pollutants_dat.select().where(Recall_pollutants_dat.recall_rec_id == args['recall_rec_id'],
+												Recall_pollutants_dat.jday == args['jday'],
+												Recall_pollutants_dat.mo == args['mo'],
+												Recall_pollutants_dat.day_mo == args['day_mo'],
+												Recall_pollutants_dat.yr == args['yr'])) == 0
+
+#Retorna contingut de la taula del recall_point id fila dataId
+def get_table_register(project_db, id, dataId):
+	table = Recall_pollutants_dat
+	SetupProjectDatabase.init(project_db)
+
+	s = table.select().where(table.recall_rec == id)
+
+	items = [model_to_dict(v, recurse=False) for v in s]
+
+	outerList = group_pollutants(project_db, items)
+	return outerList[int(dataId) - 1]
+
 
 #get normal, retorna cada element de recall_pollutants_dat
 class RecallPollutantsDatListApi(BaseRestModel):
@@ -481,7 +503,7 @@ class RecallPollutantsDatListJoinApi(BaseRestModel):
 		page = self.get_arg(args, 'page', 1)
 		per_page = self.get_arg(args, 'per_page', 50)
 
-		s = table.select().where(table.recall_rec == id)
+		s = table.select().where(table.recall_rec_id == id)
 		total = s.count()
 
 		if sort == 'name':
@@ -511,51 +533,47 @@ class RecallPollutantsDatPostApi(BaseRestModel):
 
 
 			SetupProjectDatabase.init(project_db)
-			if len(Recall_pollutants_dat.select().where(Recall_pollutants_dat.recall_rec == args['recall_rec_id'],
-													 Recall_pollutants_dat.jday == args['jday'],
-													 Recall_pollutants_dat.mo == args['mo'],
-													 Recall_pollutants_dat.day_mo == args['day_mo'],
-													 Recall_pollutants_dat.yr == args['yr'])) > 0:
-
+			if not register_is_unique(args):
 				abort(400, message="Unexpected error, register already exists")
-
 
 			return {'id': Recall_pollutants_dat.insert_many(items).execute() }, 201
 
 		except Exception as ex:
 			abort(400, message="Unexpected error {ex}".format(ex=ex))
 
-	def put(self, project_db):
-		items = separate_pollutants_dat(project_db, add_id=True)
-		for item in items:
-			id = item['id']
-			item.pop('id', None)	#Esborrem la id, sino no es pot fer update
-			#Recall_pollutants_dat.update(item).where(Recall_pollutants_dat.id == id).execute()
-
-			a = Recall_pollutants_dat.where().where(Recall_pollutants_dat.recall_rec == item['recall_rec_id'],
-            													 Recall_pollutants_dat.jday == item['jday'],
-            													 Recall_pollutants_dat.mo == item['mo'],
-            													 Recall_pollutants_dat.day_mo == item['day_mo'],
-            													 Recall_pollutants_dat.yr == item['yr'])
-
-			return {'put':a}, 201
-
-
-		args = get_recall_pollutants_dat_args(project_db)
-		return {'put':len(items)}, 201
-
-
 #Busca a recall_pollutants_dat per id_contaminant i id_recall_rec
 #Si s'aplica paginacio a la taula??
 class RecallPollutantsDatGetApi(BaseRestModel):
 	def get(self, project_db, id, dataId):
+		return get_table_register(project_db, id, dataId)
 
-		table = Recall_pollutants_dat
-		SetupProjectDatabase.init(project_db)
+	def put(self, project_db, id, dataId):
+		items = separate_pollutants_dat(project_db)
+		register = get_table_register(project_db, id, dataId)['name_to_id_recall_pollutants_dat']
+		pollutants_ids_from_names = get_pollutants_ids_from_names(project_db)
+		#return {'aaa': register}, 201
 
-		s = table.select().where(table.recall_rec == id)
+		for item in items:
+			pol_id = item['pollutants_pth']
+			register_id = register[pol_id]
 
-		items = [model_to_dict(v, recurse=False) for v in s]
+			obj = {
+				Recall_pollutants_dat.recall_rec_id: item['recall_rec_id'],
+				Recall_pollutants_dat.pollutants_pth_id: item['pollutants_pth'],
+				Recall_pollutants_dat.jday: item['jday'],
+				Recall_pollutants_dat.mo: item['mo'],
+				Recall_pollutants_dat.day_mo: item['day_mo'],
+				Recall_pollutants_dat.yr: item['yr'],
+				Recall_pollutants_dat.load: item['load'],
+			}
+			Recall_pollutants_dat.update(obj).where(Recall_pollutants_dat.id == register_id).execute()
 
-		outerList = group_pollutants(project_db, items)
-		return outerList[int(dataId)-1]
+		return {'put':len(items)}, 201
+
+	def delete(self, project_db, id, dataId):
+		register = get_table_register(project_db, id, dataId)['name_to_id_recall_pollutants_dat']
+		for id in register.values():
+			Recall_pollutants_dat.delete().where(Recall_pollutants_dat.id == id).execute()
+			#a = list(Recall_pollutants_dat.select().where(Recall_pollutants_dat.id == register_id).dicts())
+
+		return 204

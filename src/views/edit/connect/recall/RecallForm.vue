@@ -49,10 +49,10 @@
 
 				<grid-view ref="dataGrid"
 						   :api-url="`recall_pollutants/data/items/join/${item.props.id}`"
-						   delete-api-url="recall/data/item"
+						   :delete-api-url="`recall_pollutants/data/item/${item.props.id}`"
 						   collection-description="pollutant in this point source"
 						   default-sort="yr"
-						   use-dynamic-fields @change="getTablePollutantTotal" :hide-fields="['id','recall_rec']"
+						   use-dynamic-fields @change="getTablePollutantTotal" :hide-fields="['id','recall_rec', 'name_to_id_recall_pollutants_dat']"
 						   use-top-bar create-button-text="Add Data Manually"
 						   :show-import-export="originalRecTyp !== 4" :hide-create="originalRecTyp === 4 && dataPollutantTotal > 0"
 						   empty-message="Use the buttons above to add data."
