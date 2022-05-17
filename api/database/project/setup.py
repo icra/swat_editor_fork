@@ -41,7 +41,8 @@ class SetupProjectDatabase():
 		base.db.create_tables([dr.Dr_om_del, dr.Dr_pest_del, dr.Dr_pest_col, dr.Dr_pest_val, dr.Dr_path_del, dr.Dr_path_col, dr.Dr_path_val, dr.Dr_hmet_del, dr.Dr_hmet_col, dr.Dr_hmet_val, dr.Dr_salt_del, dr.Dr_salt_col, dr.Dr_salt_val, dr.Delratio_del])
 		base.db.create_tables([exco.Exco_om_exc, exco.Exco_pest_exc, exco.Exco_path_exc, exco.Exco_hmet_exc, exco.Exco_salt_exc, exco.Exco_exc])
 		base.db.create_tables([exco.Exco_pest_col, exco.Exco_pest_val, exco.Exco_path_col, exco.Exco_path_val, exco.Exco_hmet_col, exco.Exco_hmet_val, exco.Exco_salt_col, exco.Exco_salt_val])
-		base.db.create_tables([recall.Recall_rec, recall.Recall_dat])
+		#ICRA Adrià Riu
+		base.db.create_tables([recall.Recall_rec, recall.Recall_dat, recall.Recall_pollutants_dat])
 		base.db.create_tables([hydrology.Topography_hyd, hydrology.Hydrology_hyd, hydrology.Field_fld])
 		base.db.create_tables([routing_unit.Rout_unit_dr, routing_unit.Rout_unit_rtu])
 		base.db.create_tables([aquifer.Initial_aqu, aquifer.Aquifer_aqu])

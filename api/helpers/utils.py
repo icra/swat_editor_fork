@@ -131,7 +131,7 @@ def rel_path(compare_path, curr_path):
 		return None
 	if curr_path[0].lower() != compare_path[0].lower():
 		return curr_path
-	
+
 	base_path = os.path.dirname(compare_path)
 	return os.path.relpath(curr_path, base_path)
 
@@ -139,11 +139,11 @@ def rel_path(compare_path, curr_path):
 def full_path(compare_path, curr_path):
 	if curr_path is None:
 		return None
-	
+
 	p = curr_path
 	if not os.path.isabs(curr_path):
 		p = os.path.normpath(os.path.join(os.path.dirname(compare_path), curr_path))
-	
+
 	return p
 
 

@@ -250,6 +250,7 @@ class BaseRestModel(Resource):
 	def base_put(self, project_db, id, table, item_description):
 		try:
 			SetupProjectDatabase.init(project_db)
+
 			args = self.get_args_reflect(table, project_db)
 
 			result = self.save_args(table, args, id=id)
@@ -268,8 +269,8 @@ class BaseRestModel(Resource):
 	def base_post(self, project_db, table, item_description, extra_args=[]):
 		try:
 			SetupProjectDatabase.init(project_db)
-			args = self.get_args_reflect(table, project_db, extra_args=extra_args)
 
+			args = self.get_args_reflect(table, project_db, extra_args=extra_args)
 			result = self.save_args(table, args, is_new=True, extra_args=extra_args)
 
 			if result > 0:

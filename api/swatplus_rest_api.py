@@ -45,8 +45,11 @@ class SwatPlusShutdownApi(Resource):
 list_params = 'list/<everything:project_db>'
 post_params = 'post/<everything:project_db>'
 get_params = '<id>/<everything:project_db>'
+get_2_id_params = '<id>/<dataId>/<everything:project_db>'			#ICRA Joan Saló
+
 many_params = 'many/<everything:project_db>'
 datasets_get_name_params = 'datasets/<name>/<everything:datasets_db>'
+
 
 api.add_resource(SwatPlusApi, '/')
 api.add_resource(SwatPlusShutdownApi, '/shutdown')
@@ -302,6 +305,15 @@ api.add_resource(recall.RecallRecApi, '/recall/data/' + get_params)
 api.add_resource(recall.RecallDatListApi, '/recall/data/items/<id>/' + list_params)
 api.add_resource(recall.RecallDatPostApi, '/recall/data/item/' + post_params)
 api.add_resource(recall.RecallDatApi, '/recall/data/item/' + get_params)
+
+#ICRA Joan Saló
+api.add_resource(recall.RecallPollutantsDatListApi, '/recall_pollutants/data/items/<id>/' + list_params)	#No es fa servir
+
+
+api.add_resource(recall.RecallPollutantsDatPostApi, '/recall_pollutants/data/item/' + post_params)
+api.add_resource(recall.RecallPollutantsDatListJoinApi, '/recall_pollutants/data/items/join/<id>/' + list_params)
+api.add_resource(recall.RecallPollutantsDatGetApi, '/recall_pollutants/data/item/' + get_2_id_params)
+
 """ Recall Modules   """
 
 """ Landuse Modules """
@@ -584,4 +596,5 @@ if __name__ == '__main__':
 	parser = argparse.ArgumentParser(description="SWAT+ Editor REST API")
 	parser.add_argument("port", type=str, help="port number to run API", default=5000, nargs="?")
 	args = parser.parse_args()
+
 	app.run(port=int(args.port), debug=True)

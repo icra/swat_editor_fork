@@ -4,12 +4,12 @@
 		<b-toast id="changes-saved" variant="success" solid title="Changes saved" toaster="b-toaster-top-center">
 			Your changes have been saved.
 		</b-toast>
-		
+
 		<b-form :validated="page.validated" @submit.prevent="save">
 			<div v-if="page.bulk.show">
 				<object-selector name="Recall" table="rec_con" @change="bulkSelectionChange"></object-selector>
 			</div>
-			
+
 			<connect-form
 				:item="item.connect" :item-outflow="item.outflow" :api-url="apiUrl" outflow-con-id-field="rtu_con_id"
 				:is-update="isUpdate" @change="connectVarsChange"
@@ -25,8 +25,9 @@
 				<b-form-select v-model="item.props.rec_typ" :options="recTypOptions" required @change="changedRecTyp = true" />
 			</b-form-group>
 
-			<b-alert variant="warning" :show="isUpdate && changedRecTyp && dataTotal > 0">
-				Warning: changing the time step will delete any existing data for the record. 
+			<!-- ICRA Joan Saló -->
+			<b-alert variant="warning" :show="isUpdate && changedRecTyp && (dataTotal > 0 || dataPollutantTotal > 0)">
+				Warning: changing the time step will delete any existing data for the record.
 				Please export it first if you need to retain it. Click the save changes button before modifying any data below.
 			</b-alert>
 
@@ -37,12 +38,27 @@
 					delete-api-url="recall/data/item"
 					collection-description="recall data"
 					default-sort="yr"
-					use-dynamic-fields @change="getTableTotal" :hide-fields="['id','recall_rec']" 
+					use-dynamic-fields @change="getTableTotal" :hide-fields="['id','recall_rec']"
 					use-top-bar create-button-text="Add Data Manually"
 					:show-import-export="originalRecTyp !== 4" :hide-create="originalRecTyp === 4 && dataTotal > 0"
 					empty-message="Use the buttons above to add data."
 					default-csv-file="recall.csv" table-name="rec_dat"
 					:import-export-related-id="item.props.id" import-export-delete-existing />
+				<!-- ICRA Joan Saló  -->
+				<h2 class="my-3">Pollutants</h2>
+
+				<grid-view ref="dataGrid"
+						   :api-url="`recall_pollutants/data/items/join/${item.props.id}`"
+						   delete-api-url="recall/data/item"
+						   collection-description="pollutant in this point source"
+						   default-sort="yr"
+						   use-dynamic-fields @change="getTablePollutantTotal" :hide-fields="['id','recall_rec']"
+						   use-top-bar create-button-text="Add Data Manually"
+						   :show-import-export="originalRecTyp !== 4" :hide-create="originalRecTyp === 4 && dataPollutantTotal > 0"
+						   empty-message="Use the buttons above to add data."
+						   default-csv-file="recall.csv" table-name="rec_dat"
+						   :import-export-related-id="item.props.id" import-export-delete-existing
+						   create-route="create_pollutant" edit-route="edit_pollutant/"/>
 			</div>
 
 			<action-bar>
@@ -68,8 +84,8 @@ import ObjectSelector from '@/components/ObjectSelector.vue';
 
 export default {
 	name: 'RecallForm',
-	components: { 
-		ConnectForm, ObjectSelector 
+	components: {
+		ConnectForm, ObjectSelector
 	},
 	props: {
 		apiUrl: {
@@ -113,7 +129,8 @@ export default {
 			],
 			changedRecTyp: false,
 			originalRecTyp: this.item.props.rec_typ,
-			dataTotal: 0
+			dataTotal: 0,
+			dataPollutantTotal: 0, //ICRA Joan Saló
 		}
 	},
 	methods: {
@@ -135,7 +152,7 @@ export default {
 			this.page.saving = true;
 			this.page.validated = true;
 			let val_error = false;
-			
+
 			if (this.item.connect.elev === '') this.item.connect.elev = null;
 			if (this.item.connect.wst_name === '') this.item.connect.wst_name = null;
 			for (let field of this.propFields) {
@@ -154,10 +171,10 @@ export default {
 					const response = await this.putPropsDb(this.item.props);
 					if (!this.isUpdate)
 						this.item.connect[`${this.propCol}_id`] = response.data.id;
-						
+
 					const response2 = await this.putConnectDb(this.item.connect);
 					this.page.validated = false;
-					
+
 					if (this.isUpdate) {
 						this.$bvToast.show('changes-saved');
 						await this.$refs.dataGrid.get();
@@ -179,14 +196,14 @@ export default {
                 else {
                     let item = {};
                     item.selected_ids = this.selectedItems;
-                
+
                     for (let v of this.selectedConnectVars) {
                         item[v] = this.item.connect[v];
 					}
 					for (let v of this.selectedVars) {
                         item[v] = this.item.props[v];
 					}
-					
+
 					try {
 						this.log(item);
 						const response = await this.$http.put(`${this.apiUrl}/data/many/${this.projectDbUrl}`, item);
@@ -197,7 +214,7 @@ export default {
 					}
                 }
 			}
-			
+
 			this.page.saving = false;
 		},
 		bulkSelectionChange(selection) {
@@ -208,6 +225,10 @@ export default {
 		},
 		getTableTotal(total) {
 			this.dataTotal = total;
+		},
+		//ICRA Joan Saló
+		getTablePollutantTotal(total) {
+			this.dataPollutantTotal = total;
 		}
 	}
 }

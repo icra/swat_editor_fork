@@ -48,10 +48,7 @@ export default {
 			this.page.error = null;
 
             try {
-				console.log(`vars/${this.paths.vars}/${this.appPath}`)
-
 				const response = await this.$http.get(`vars/${this.paths.vars}/${this.appPath}`);
-				console.log(response)
                 this.vars = response.data;
 
                 let keys = Object.keys(this.vars);

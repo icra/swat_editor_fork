@@ -6,13 +6,18 @@ import datetime
 from .base import BaseRestModel
 from database.project.setup import SetupProjectDatabase
 from database.project.connect import Recall_con, Recall_con_out
-from database.project.recall import Recall_rec, Recall_dat
+from database.project.recall import Recall_rec, Recall_dat, Recall_pollutants_dat	#ICRA Joan Saló
 from database.project.climate import Weather_sta_cli
 from database.project.simulation import Time_sim
 from database.project import base as project_base
 from database import lib as db_lib
-
+from database.project.hru_parm_db import Pollutants_pth		#ICRA Joan Saló
+import operator
+import itertools
+import functools
+from flask import request
 invalid_name_msg = 'Invalid name {name}. Please ensure the value exists in your database.'
+
 
 class RecallConApi(BaseRestModel):
 	def get(self, project_db, id):
@@ -46,7 +51,7 @@ class RecallConListApi(BaseRestModel):
 			d = self.base_get_con_item_dict(v)
 			d['rec_typ'] = v.rec.rec_typ
 			ml.append(d)
-		
+
 		return {
 			'total': items['total'],
 			'matches': items['matches'],
@@ -129,7 +134,7 @@ def update_recall_rec(db, m, id, sim, new_rec_typ):
 
 				start_month = start_date.month
 				months = end_date.month
-				
+
 				if new_rec_typ != 2:
 					insert_daily = True
 
@@ -198,7 +203,7 @@ def update_recall_rec(db, m, id, sim, new_rec_typ):
 					'tmp': 0
 				}
 				rec_data.append(data)
-				current_date = current_date + datetime.timedelta(1) 
+				current_date = current_date + datetime.timedelta(1)
 
 		db_lib.bulk_insert(project_base.db, Recall_dat, rec_data)
 
@@ -221,7 +226,7 @@ class RecallRecApi(BaseRestModel):
 			sim = Time_sim.get_or_create_default()
 			m = table.get(table.id==id)
 			update_recall_rec(project_base.db, m, id, sim, args['rec_typ'])
-			
+
 			result = self.save_args(table, args, id=id)
 
 			if result > 0:
@@ -316,7 +321,7 @@ class RecallDatListApi(BaseRestModel):
 		reverse = self.get_arg(args, 'reverse', 'n')
 		page = self.get_arg(args, 'page', 1)
 		per_page = self.get_arg(args, 'per_page', 50)
-		
+
 		s = table.select().where(table.recall_rec_id == id)
 		total = s.count()
 
@@ -334,3 +339,223 @@ class RecallDatListApi(BaseRestModel):
 			'matches': total,
 			'items': [model_to_dict(v, recurse=False) for v in m]
 		}
+
+
+#ICRA Joan Saló
+
+def group_pollutants(project_db, items):
+	def join_objects(l, i):
+		obj = {
+			'jday': l[0]['jday'],
+			'mo': l[0]['mo'],
+			'day_mo': l[0]['day_mo'],
+			'yr': l[0]['yr'],
+			'id': i
+		}
+		for pollutant in l:
+			#Acces a base de dades, agafem el nom (codi) del contaminant
+			table = Pollutants_pth
+			SetupProjectDatabase.init(project_db)
+
+			s = table.select().where(table.id == pollutant["pollutants_pth"])
+			pollutant_pth = [model_to_dict(v, recurse=False) for v in s][0]
+
+			#obj[pollutant["pollutants_pth"]] = pollutant["load"]
+			obj[pollutant_pth['name']] = pollutant["load"]
+
+		return obj
+
+	items = sorted(items, key=operator.itemgetter("jday", "mo","day_mo","yr"))
+	outerList = []
+	i = 1
+	for _,g in itertools.groupby(items, key=operator.itemgetter("jday", "mo","day_mo","yr")):
+		outerList.append(join_objects(list(g), i))
+		i += 1
+	return outerList
+
+#Retorna la taula de pollutants_pth
+def get_pollutants_created(project_db):
+	table = Pollutants_pth
+	SetupProjectDatabase.init(project_db)
+
+	s = table.select()
+
+	pollutants = [model_to_dict(v, recurse=False) for v in s]
+	return pollutants
+
+#Retorna els arguments de la taula recall_pollutants_dat (els contaminants tots junts)
+def get_recall_pollutants_dat_args(project_db):
+	parser = reqparse.RequestParser()
+
+	parser.add_argument('recall_rec_id', type=int, required=False, location='json')
+	parser.add_argument('jday', type=int, required=False, location='json')
+	parser.add_argument('mo', type=int, required=False, location='json')
+	parser.add_argument('day_mo', type=int, required=False, location='json')
+	parser.add_argument('yr', type=int, required=False, location='json')
+
+	pollutants = get_pollutants_created(project_db)
+
+	for pollutant in pollutants:
+		parser.add_argument(pollutant["name"], type=float, required=False, location='json')
+
+	args = parser.parse_args(strict=False)
+	return args
+
+#Retornem, per tots els contaminants creats, diccionari name -> id
+def get_pollutants_ids_from_names(project_db):
+
+	SetupProjectDatabase.init(project_db)
+	model = list(Pollutants_pth.select().dicts())
+
+	translation = {}
+	for pollutant in model:
+		translation[pollutant["name"]] = pollutant["id"]
+
+	return translation
+
+
+#D'una crida amb els contamintans junts, et genera les crides per fer els posts
+def separate_pollutants_dat(project_db, add_id = False):
+	args = get_recall_pollutants_dat_args(project_db)
+	pollutants_translation = get_pollutants_ids_from_names(project_db)
+	pollutants = []
+
+	for key in pollutants_translation.keys():
+		obj = {
+			'recall_rec': args['recall_rec_id'],
+			'pollutants_pth': pollutants_translation[key],
+			'jday': args['jday'],
+			'mo': args['mo'],
+			'day_mo': args['day_mo'],
+			'yr': args['yr'],
+			'load': args[key],
+		}
+		if add_id:
+			objs['id']: key
+
+		pollutants.append(obj)
+	return pollutants
+
+#get normal, retorna cada element de recall_pollutants_dat
+class RecallPollutantsDatListApi(BaseRestModel):
+	def get(self, project_db, id):
+
+		table = Recall_pollutants_dat
+		SetupProjectDatabase.init(project_db)
+		args = self.get_table_args()
+
+		sort = self.get_arg(args, 'sort', 'name')
+		reverse = self.get_arg(args, 'reverse', 'n')
+		page = self.get_arg(args, 'page', 1)
+		per_page = self.get_arg(args, 'per_page', 50)
+
+		s = table.select().where(table.recall_rec_id == id)
+		total = s.count()
+
+		if sort == 'name':
+			sort_val = table.name if reverse != 'y' else table.name.desc()
+		else:
+			sort_val = SQL('[{}]'.format(sort))
+			if reverse == 'y':
+				sort_val = SQL('[{}]'.format(sort)).desc()
+
+		m = s.order_by(sort_val).paginate(int(page), int(per_page))
+
+		return {
+			'total': total,
+			'matches': total,
+			'items': [model_to_dict(v, recurse=False) for v in m]
+		}
+
+#Et retorna els contaminants agrupats per jday, mo, day_mo i yr
+#Què passa si s'aplica paginacio? Com aplicar paginacio
+class RecallPollutantsDatListJoinApi(BaseRestModel):
+	def get(self, project_db, id):
+
+		table = Recall_pollutants_dat
+		SetupProjectDatabase.init(project_db)
+		args = self.get_table_args()
+
+		sort = self.get_arg(args, 'sort', 'name')
+		reverse = self.get_arg(args, 'reverse', 'n')
+		page = self.get_arg(args, 'page', 1)
+		per_page = self.get_arg(args, 'per_page', 50)
+
+		s = table.select().where(table.recall_rec == id)
+		total = s.count()
+
+		if sort == 'name':
+			sort_val = table.name if reverse != 'y' else table.name.desc()
+		else:
+			sort_val = SQL('[{}]'.format(sort))
+			if reverse == 'y':
+				sort_val = SQL('[{}]'.format(sort)).desc()
+
+		m = s.order_by(sort_val).paginate(int(page), int(per_page))
+
+		items = [model_to_dict(v, recurse=False) for v in m]
+
+		outerList = group_pollutants(project_db, items)
+
+		return {
+        	'total': len(outerList),
+        	'matches': len(outerList),
+        	'items': outerList
+        }
+
+class RecallPollutantsDatPostApi(BaseRestModel):
+	def post(self, project_db):
+		try:
+			items = separate_pollutants_dat(project_db)
+			args = get_recall_pollutants_dat_args(project_db)
+
+
+			SetupProjectDatabase.init(project_db)
+			if len(Recall_pollutants_dat.select().where(Recall_pollutants_dat.recall_rec == args['recall_rec_id'],
+													 Recall_pollutants_dat.jday == args['jday'],
+													 Recall_pollutants_dat.mo == args['mo'],
+													 Recall_pollutants_dat.day_mo == args['day_mo'],
+													 Recall_pollutants_dat.yr == args['yr'])) > 0:
+
+				abort(400, message="Unexpected error, register already exists")
+
+
+			return {'id': Recall_pollutants_dat.insert_many(items).execute() }, 201
+
+		except Exception as ex:
+			abort(400, message="Unexpected error {ex}".format(ex=ex))
+
+	def put(self, project_db):
+		items = separate_pollutants_dat(project_db, add_id=True)
+		for item in items:
+			id = item['id']
+			item.pop('id', None)	#Esborrem la id, sino no es pot fer update
+			#Recall_pollutants_dat.update(item).where(Recall_pollutants_dat.id == id).execute()
+
+			a = Recall_pollutants_dat.where().where(Recall_pollutants_dat.recall_rec == item['recall_rec_id'],
+            													 Recall_pollutants_dat.jday == item['jday'],
+            													 Recall_pollutants_dat.mo == item['mo'],
+            													 Recall_pollutants_dat.day_mo == item['day_mo'],
+            													 Recall_pollutants_dat.yr == item['yr'])
+
+			return {'put':a}, 201
+
+
+		args = get_recall_pollutants_dat_args(project_db)
+		return {'put':len(items)}, 201
+
+
+#Busca a recall_pollutants_dat per id_contaminant i id_recall_rec
+#Si s'aplica paginacio a la taula??
+class RecallPollutantsDatGetApi(BaseRestModel):
+	def get(self, project_db, id, dataId):
+
+		table = Recall_pollutants_dat
+		SetupProjectDatabase.init(project_db)
+
+		s = table.select().where(table.recall_rec == id)
+
+		items = [model_to_dict(v, recurse=False) for v in s]
+
+		outerList = group_pollutants(project_db, items)
+		return outerList[int(dataId)-1]

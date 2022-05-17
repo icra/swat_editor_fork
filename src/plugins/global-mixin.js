@@ -58,7 +58,7 @@ Vue.mixin({
         this.version = appsettings.version;
         this.swatplus = appsettings.swatplus;
         this.python = appsettings.python;
-        this.pythonPath = appsettings.pythonPath;         
+        this.pythonPath = appsettings.pythonPath;
 	},
 	computed: {
 		...mapGetters(['currentProject']),
@@ -307,7 +307,7 @@ Vue.mixin({
 		joinPath: function(filePath, fileName) {
 			if (this.isNullOrEmpty(filePath))
 				return fileName;
-				
+
 			return path.join(filePath, fileName);
 		},
 		getObjTypeRoute(item) {
@@ -337,6 +337,6 @@ Vue.mixin({
 		async exit() {
 			await this.$http.get('shutdown');
 			remote.app.quit();
-        }
+        },
 	}
 })

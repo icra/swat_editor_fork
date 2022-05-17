@@ -1,3 +1,4 @@
+<!--ICRA Joan Saló-->
 <template>
 	<project-container :loading="page.loading" :load-error="page.error">
 		<file-header input-file="recall.con" docs-path="connections/recall">
@@ -13,8 +14,9 @@
 		<edit-form show-range hide-name
 			:item="item"
 			:vars="vars"
-			api-url="recall/data/item"
-			:redirect-route="`/edit/recall/edit/${$route.params.id}`" redirect-path />
+			api-url="/recall_pollutants/data/item"
+			:redirect-route="`/edit/recall/edit/${$route.params.id}`" redirect-path
+		/>
 	</project-container>
 </template>
 
@@ -22,14 +24,14 @@
 import EditForm from '@/components/EditForm';
 
 export default {
-	name: 'RecallDataCreate',
+	name: 'RecallDataCreatePollutant',
 	components: {
 		EditForm
 	},
 	data() {
 		return {
 			paths: {
-				vars: 'recall_dat'
+				vars: 'recall_pollutants_dat'
 			},
 			page: {
 				loading: true,
@@ -41,7 +43,7 @@ export default {
 				name: null,
 				rec_typ: null,
 				rec_typ_name: null
-			}
+			},
 		}
 	},
 	async created() {
@@ -59,9 +61,31 @@ export default {
 
             try {
 				const response = await this.$http.get(`vars/${this.paths.vars}/${this.appPath}`);
+
+				let dbUrl = this.useDatasetsDb ? this.datasetsDbUrl : this.projectDbUrl;
+
+
                 this.vars = response.data;
                 this.item = this.setVars(this.item, this.vars);
 				this.item.recall_rec_id = this.$route.params.id;
+
+				const pollutants_created = await this.$http.get(`db/pollutants/list/${dbUrl}`);
+				for (let pollutant of pollutants_created.data.items){
+					let obj = {
+						id: pollutant.id,
+						name: pollutant.name,
+						type: 'float',
+						min_value: 0,
+						max_value: 0,
+						default_value: 0,
+						default_text: "",
+						units: "",
+						description: pollutant.description
+					}
+					this.item[pollutant.name] = 0
+					this.vars[pollutant.name] = obj
+				}
+
 			} catch (error) {
 				this.page.error = this.logError(error, 'Unable to get table metadata from database.');
 			}

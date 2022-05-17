@@ -13,8 +13,8 @@
 		<edit-form show-range is-update hide-name
 			:item="item"
 			:vars="vars"
-			api-url="recall/data/item"
-			:redirect-route="`/edit/recall/edit/${$route.params.id}`" redirect-path />
+			api-url="recall_pollutants/data/item/post"
+			:redirect-route="`/edit/recall/edit/${$route.params.id}`" redirect-path  :no-id="true"/>
 	</project-container>
 </template>
 
@@ -22,15 +22,15 @@
 import EditForm from '@/components/EditForm';
 
 export default {
-	name: 'RecallDataEdit',
+	name: 'RecallDataEditPollutant',
 	components: {
 		EditForm
 	},
 	data() {
 		return {
 			paths: {
-				data: 'recall/data/item',
-				vars: 'recall_dat'
+				data: 'recall_pollutants/data/item',
+				vars: 'recall_pollutants_dat'
 			},
 			page: {
 				loading: false,
@@ -58,19 +58,36 @@ export default {
 			this.page.error = null;
 
 			let item = this.$parent.$parent.item;
+
 			this.rec.name = item.connect.name;
 			this.rec.rec_typ = item.props.rec_typ;
 			this.rec.rec_typ_name = this.$parent.$parent.getRecTypDescription(this.rec.rec_typ);
 
             try {
-				console.log(`${this.paths.data}/${this.$route.params.dataId}/${this.projectDbUrl}`)
-				const response = await this.$http.get(`${this.paths.data}/${this.$route.params.dataId}/${this.projectDbUrl}`);
+				const response = await this.$http.get(`${this.paths.data}/${item.connect.id}/${this.$route.params.dataId}/${this.projectDbUrl}`);
 				this.item = response.data;
 				this.item.recall_rec_id = this.item.recall_rec;
 				this.log(this.item);
 
 				const response2 = await this.$http.get(`vars/${this.paths.vars}/${this.appPath}`);
-				this.vars = response2.data;
+				this.vars = response2.data
+				let dbUrl = this.useDatasetsDb ? this.datasetsDbUrl : this.projectDbUrl;
+
+				const pollutants_created = await this.$http.get(`db/pollutants/list/${dbUrl}`);
+				for (let pollutant of pollutants_created.data.items){
+					let obj = {
+						id: pollutant.id,
+						name: pollutant.name,
+						type: 'float',
+						min_value: 0,
+						max_value: 0,
+						default_value: 0,
+						default_text: "",
+						units: "",
+						description: pollutant.description
+					}
+					this.vars[pollutant.name] = obj
+				}
 			} catch (error) {
 				this.page.error = this.logError(error, 'Unable to get project information from database.');
 			}

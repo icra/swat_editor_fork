@@ -15,7 +15,7 @@
 			<b-button v-if="showImportExport" type="button" variant="info" @click="page.import.show = true" class="mr-1">
 				Import/Export
 			</b-button>
-			<router-link v-if="!hideCreate" to="create" append class="btn btn-primary mr-1">{{createButtonText}}</router-link>
+			<router-link v-if="!hideCreate" :to="createRoute" append class="btn btn-primary mr-1">{{createButtonText}}</router-link>
 		</div>
 		<b-table striped responsive small table-class="table-fixed-height border-bottom table-grid" show-empty sticky-header="70vh"
 				:items="items" :busy="table.loading"
@@ -68,7 +68,7 @@
 				<h4 v-if="useFilter && !isNullOrEmpty(table.filter)">No records found matching "{{table.filter}}".</h4>
 				<div v-else class="text-center border-dash my-4 mx-4 bg-white">
 					<div class="p-4 lead text-muted">
-						<router-link v-if="!hideCreate" to="create" append class="text-muted">
+						<router-link v-if="!hideCreate" :to="createRoute" append class="text-muted">
 							You don't have any {{collectionDescription}}.
 							{{emptyMessage}}
 						</router-link>
@@ -85,7 +85,7 @@
 		</b-table>
 
 		<action-bar v-if="useActionBar">
-			<router-link v-if="!hideCreate" to="create" append class="btn btn-primary mr-1">{{createButtonText}}</router-link>
+			<router-link v-if="!hideCreate" :to="createRoute" append class="btn btn-primary mr-1">{{createButtonText}}</router-link>
 			<slot></slot>
 			<b-button v-if="showImportExport" type="button" variant="info" @click="page.import.show = true">
 				Import/Export
@@ -105,7 +105,7 @@
 
 			<p>
 				Are you sure you want to delete <strong>{{page.delete.name}}</strong>?
-				This action is permanent and cannot be undone. 
+				This action is permanent and cannot be undone.
 			</p>
 
 			<div slot="modal-footer">
@@ -115,15 +115,15 @@
 		</b-modal>
 
 		<b-modal v-model="page.import.show" centered size="lg" title="Import/Export Data" no-close-on-backdrop no-close-on-esc hide-header-close>
-			<error-alert :text="page.import.error"></error-alert>			
+			<error-alert :text="page.import.error"></error-alert>
 			<stack-trace-error v-if="!isNullOrEmpty(task.error)" error-title="There was an error importing or exporting your data." :stack-trace="task.error.toString()" />
-			
+
 			<div v-if="task.running" class="text-center p-5">
 				<font-awesome-icon :icon="['fas', 'spinner']" spin size="2x" />
 			</div>
-			<div v-else-if="isNullOrEmpty(task.error)">					
+			<div v-else-if="isNullOrEmpty(task.error)">
 				<p>
-					Export your existing data to {{importExportDescription}} or import a {{importExportDescription}} file of new values. 
+					Export your existing data to {{importExportDescription}} or import a {{importExportDescription}} file of new values.
 					Any existing values in the table with the same name will be updated to match your {{importExportDescription}} data.
 					Export data first to get a template with the correct columns.
 				</p>
@@ -137,8 +137,8 @@
 				</b-form-group>
 
 				<b-form-group>
-					<label for="modal_file_name" v-if="page.import.form.type == 'import_csv'">Select a {{importExportDescription == 'CSV' ? 'CSV (comma delimited)' : importExportDescription}} file to import</label> 
-					<label for="modal_file_name" v-else>Select where to save your {{importExportDescription == 'CSV' ? 'CSV (comma delimited)' : importExportDescription}} file</label> 
+					<label for="modal_file_name" v-if="page.import.form.type == 'import_csv'">Select a {{importExportDescription == 'CSV' ? 'CSV (comma delimited)' : importExportDescription}} file to import</label>
+					<label for="modal_file_name" v-else>Select where to save your {{importExportDescription == 'CSV' ? 'CSV (comma delimited)' : importExportDescription}} file</label>
 					<select-file-input v-model="page.import.form.fileName" :value="page.import.form.fileName" id="modal_file_name"
 						:fileType="importExportDescription.toLowerCase()" required :default-file-name="defaultCsvFile" :save-dialog="page.import.form.type == 'export_csv'"
 						invalidFeedback="Please select a file." />
@@ -146,7 +146,7 @@
 			</div>
 
 			<div slot="modal-footer">
-				<save-button v-if="isNullOrEmpty(task.error)" :saving="task.running || page.import.saving" 
+				<save-button v-if="isNullOrEmpty(task.error)" :saving="task.running || page.import.saving"
 					:text="page.import.form.type === 'export_csv' ? 'Export Data' : 'Import Data'" type="button" @click.native="importData"></save-button>
 				<b-button type="button" variant="secondary" @click="cancelTask">Cancel</b-button>
 			</div>
@@ -154,12 +154,12 @@
 
 		<b-modal ref="exportedModal" v-model="page.exported.show" centered size="md" title="Data Exported" no-close-on-backdrop no-close-on-esc hide-header-close>
 			<p>
-				Your data has been exported to a {{importExportDescription}} file. 
+				Your data has been exported to a {{importExportDescription}} file.
 			</p>
 			<p>
 				<open-file :file-path="page.import.form.fileName" text="Open file" css-class="btn btn-primary" />
 			</p>
-			
+
 			<div slot="modal-footer">
 				<b-button type="button" variant="secondary" @click="page.exported.show = false">Close</b-button>
 			</div>
@@ -187,11 +187,11 @@ export default {
 		},
 		routerLinkFields: {
 			type: Array,
-			default: () => [{ key: 'none', route: 'none' }] 
+			default: () => [{ key: 'none', route: 'none' }]
 		},
 		fileLinkFields: {
 			type: Array,
-			default: () => [{ key: 'none', defaultValue: 'null', filePath: '' }] 
+			default: () => [{ key: 'none', defaultValue: 'null', filePath: '' }]
 		},
 		useDynamicFields: {
 			type: Boolean,
@@ -220,6 +220,11 @@ export default {
 		itemName: {
 			type: String,
 			default: 'item'
+		},
+		//ICRA Joan Saló
+		createRoute: {
+			type: String,
+			default: 'create'
 		},
 		editRoute: {
 			type: String,
@@ -297,7 +302,7 @@ export default {
 		showNameAndDescriptionFirst: {
 			type: Boolean,
 			default: false
-		}
+		},
 	},
 	data() {
 		return {
@@ -505,7 +510,7 @@ export default {
 			if (this.isNullOrEmpty(this.page.import.form.fileName)) {
 				this.page.import.error = 'Please select a file below and try again.';
 			} else {
-				let args = [this.page.import.form.type, 
+				let args = [this.page.import.form.type,
 					'--db_file='+ this.currentProject.projectDb,
 					'--file_name='+ this.page.import.form.fileName,
 					'--table_name='+ this.tableName];
@@ -532,13 +537,13 @@ export default {
 			this.task.process.stdout.on('data', (data) => {
 				this.task.progress = this.getApiOutput(data);
 			});
-			
+
 			this.task.process.stderr.on('data', (data) => {
 				console.log(`stderr: ${data}`);
 				this.task.error = data;
 				this.task.running = false;
 			});
-			
+
 			this.task.process.on('close', (code) => {
 				if (this.isNullOrEmpty(this.task.error)) {
 					if (this.page.import.form.type === 'export_csv') {
@@ -550,7 +555,7 @@ export default {
 							this.task.running = false;
 							this.closeTaskModals();
 						});
-					}					
+					}
 				}
 			});
 		},
@@ -558,7 +563,7 @@ export default {
 			this.task.error = null;
 			if (this.task.process !== null)
 				this.task.process.kill();
-			
+
 			this.task.running = false;
 			this.closeTaskModals();
 		},

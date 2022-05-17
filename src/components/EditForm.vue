@@ -7,11 +7,11 @@
         <b-toast id="item-copied" variant="success" solid title="Item copied" toaster="b-toaster-top-center">
 			Your item has been copied. Redirecting to list...
 		</b-toast>
-		
+
 		<b-form @submit.prevent="save" :validated="page.validated">
             <div v-if="!page.bulk.show && !hideName">
                 <b-form-group label="Name">
-                    <b-form-input type="text" v-model="item.name" required autofocus maxLength="16" 
+                    <b-form-input type="text" v-model="item.name" required autofocus maxLength="16"
                                 v-b-tooltip.hover.bottom="'Must be unique and cannot contain spaces'" />
                 </b-form-group>
 
@@ -24,14 +24,14 @@
                     <div class="mb-1">
                         {{name}} objects can be associated with either routing units or HRUs.
                         Only one type may be edited in bulk mode at a time.
-                    </div> 
+                    </div>
                     <b-form-select v-if="includeHruOption" v-model="doHru">
                     <b-form-select-option :value="null">Choose a type...</b-form-select-option>
                     <b-form-select-option :value="false">Find objects applied to routing units</b-form-select-option>
                     <b-form-select-option :value="true">Find objects applied to HRUs</b-form-select-option>
                 </b-form-select>
                 </b-alert>
-                
+
                 <object-selector v-if="!includeHruOption || doHru !== null"
                     :name="name" :table="objectSelectorTable" :is-hru="isHru || (includeHruOption && doHru)" :no-gis="noGis"
                     @change="bulkSelectionChange"></object-selector>
@@ -46,7 +46,7 @@
                             <font-awesome-icon :icon="['fas', 'question-circle']" class="text-secondary" v-b-tooltip.hover.top="'Check to apply changes to this field to the selected objects above.'" />
                         </th>
 						<th v-if="hasDatasetItem">
-                            Dataset Value 
+                            Dataset Value
                             <font-awesome-icon :icon="['fas', 'question-circle']" class="text-secondary" v-b-tooltip.hover.top="'The value from your swatplus_datasets database for this record is shown in this column for comparison.'" />
                         </th>
 						<th v-if="hasDatasetItem" colspan="2">Your Value</th>
@@ -85,7 +85,7 @@
 		</b-form>
 
         <b-modal v-model="page.copy.show" size="lg" title="Copy Item" no-close-on-backdrop no-close-on-esc hide-header-close>
-			<error-alert :text="page.copy.error"></error-alert>	
+			<error-alert :text="page.copy.error"></error-alert>
 
 			<p>
                 Would you like to make a copy of this entry? Enter a name for the copy below. Once copied, you'll be redirected to the list of items.
@@ -187,7 +187,8 @@ export default {
         hideCopy: {
             type: Boolean,
 			default: false
-        }
+        },
+
 	},
 	data() {
 		return {
@@ -221,15 +222,20 @@ export default {
 	},
 	methods: {
 		putDb(data) {
-			if (this.page.bulk.show)
+
+			if (this.page.bulk.show){
 				return this.$http.put(this.apiUrl + '/many/' + this.projectDbUrl, data);
-            else if (this.isUpdate)
-                if (this.noId)
-                    return this.$http.put(this.apiUrl + '/' + this.projectDbUrl, data);
-                else
-				    return this.$http.put(this.apiUrl + '/' + this.item.id + '/' + this.projectDbUrl, data);
-			else
-				return this.$http.post(this.apiUrl + '/post/' + this.projectDbUrl, data);
+			}
+            else if (this.isUpdate){
+				if (this.noId){
+					console.log(this.$http.put(this.apiUrl + '/' + this.projectDbUrl, data))
+				} else{
+					return this.$http.put(this.apiUrl + '/' + this.item.id + '/' + this.projectDbUrl, data);
+				}
+			} else {
+				return this.$http.post(this.apiUrl + '/post/' + this.projectDbUrl, data)
+
+			}
         },
         getDatasetsDb(name) {
             return this.$http.get(this.apiUrl + '/datasets/' + name + '/' + this.datasetsDbUrl);
@@ -272,7 +278,7 @@ export default {
                 else {
                     item = {};
                     item.selected_ids = this.selectedItems;
-                
+
                     for (let v of this.selectedVars) {
                         item[v] = this.item[v];
                     }
@@ -293,7 +299,7 @@ export default {
                     this.page.error = this.logError(error, 'Unable to save changes to database.');
                 }
             }
-            
+
             this.page.saving = false;
             this.page.validated = false;
         },
@@ -317,7 +323,7 @@ export default {
                     this.page.copy.error = this.logError(error, 'Unable to save changes to database.');
                 }
             }
-            
+
             this.page.copy.saving = false;
         },
         bulkSelectionChange(selection) {

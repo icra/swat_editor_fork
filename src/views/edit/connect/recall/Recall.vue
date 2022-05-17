@@ -22,9 +22,9 @@
 			</connect-grid-view>
 
 			<b-modal v-model="page.import.show" centered size="lg" title="Import/Export Data" no-close-on-backdrop no-close-on-esc hide-header-close>
-				<error-alert :text="page.import.error"></error-alert>			
+				<error-alert :text="page.import.error"></error-alert>
 				<stack-trace-error v-if="!isNullOrEmpty(task.error)" error-title="There was an error importing or exporting your data." :stack-trace="task.error.toString()" />
-				
+
 				<div v-if="task.running">
 					<b-progress :value="task.progress.percent" :max="100"></b-progress>
 					<p>
@@ -33,7 +33,7 @@
 				</div>
 				<div v-else-if="isNullOrEmpty(task.error)">
 					<p>
-						Use the toggle below to import constant or time series CSV files, 
+						Use the toggle below to import constant or time series CSV files,
 						or to export your existing data to a directory.
 					</p>
 
@@ -41,14 +41,14 @@
 						<b-form-radio-group buttons button-variant="outline-primary" v-model="page.import.type" :options="page.import.options.types" />
 					</b-form-group>
 
-					<div v-if="page.import.type === 'import_csv'">	
+					<div v-if="page.import.type === 'import_csv'">
 						<b-alert variant="primary" show>
 							<p>
-								Provide a directory containing a CSV file for each recall object. For time series data, each file should be named for the object's name, e.g., 
+								Provide a directory containing a CSV file for each recall object. For time series data, each file should be named for the object's name, e.g.,
 								object <code>pt001</code> should have a file in the directory <code>pt001.csv</code>.
 								</p>
 								<p>
-								Time series files may be daily, monthly, or yearly. <strong>Make sure your simulation dates fall within the dates of your data.</strong> 
+								Time series files may be daily, monthly, or yearly. <strong>Make sure your simulation dates fall within the dates of your data.</strong>
 								Not all recall objects need to be the same time step.
 								You do not need to have a time series file or constant record for each recall object. Just leave it out of the directory to ignore.
 								</p>
@@ -65,14 +65,14 @@
 
 						<b-form-group label="Directory containing your recall CSV files">
 							<select-folder-input :required="page.import.type === 'import_csv'"
-								v-model="page.import.inputDir" :value="page.import.inputDir" 
+								v-model="page.import.inputDir" :value="page.import.inputDir"
 								invalidFeedback="Required" />
 						</b-form-group>
 					</div>
 					<div v-else>
 						<b-form-group label="Directory to save your recall CSV files">
 							<select-folder-input :required="page.import.type === 'export_csv'"
-								v-model="page.import.exportDir" :value="page.import.exportDir" 
+								v-model="page.import.exportDir" :value="page.import.exportDir"
 								invalidFeedback="Required" />
 						</b-form-group>
 					</div>
@@ -86,12 +86,12 @@
 
 			<b-modal v-model="page.exported.show" centered size="md" title="Data Exported" no-close-on-backdrop no-close-on-esc hide-header-close>
 				<p>
-					Your data has been exported. 
+					Your data has been exported.
 				</p>
 				<p>
 					<open-file :file-path="page.import.exportDir" text="Open directory" css-class="btn btn-primary" />
 				</p>
-				
+
 				<div slot="modal-footer">
 					<b-button type="button" variant="secondary" @click="page.exported.show = false">Close</b-button>
 				</div>
@@ -157,7 +157,7 @@ export default {
 				if (this.isNullOrEmpty(this.page.import.exportDir)) {
 					this.page.import.error = 'Please select a directory to save your data.';
 				} else {
-					let args = ['export_recall', 
+					let args = ['export_recall',
 							'--db_file='+ this.currentProject.projectDb,
 							'--delete_existing=n',
 							'--input_files_dir=' + this.page.import.exportDir];
@@ -169,7 +169,7 @@ export default {
 				if (this.isNullOrEmpty(this.page.import.inputDir)) {
 					this.page.import.error = 'Please select a directory containing your data.';
 				} else {
-					let args = ['import_recall', 
+					let args = ['import_recall',
 							'--db_file='+ this.currentProject.projectDb,
 							'--delete_existing=y',
 							'--input_files_dir=' + this.page.import.inputDir];
@@ -191,13 +191,13 @@ export default {
 			this.task.process.stdout.on('data', (data) => {
 				this.task.progress = this.getApiOutput(data);
 			});
-			
+
 			this.task.process.stderr.on('data', (data) => {
 				console.log(`stderr: ${data}`);
 				this.task.error = data;
 				this.task.running = false;
 			});
-			
+
 			this.task.process.on('close', (code) => {
 				if (this.isNullOrEmpty(this.task.error)) {
 					if (this.page.import.type === 'export_csv') {
@@ -217,7 +217,7 @@ export default {
 			this.task.error = null;
 			if (this.task.process !== null)
 				this.task.process.kill();
-			
+
 			this.task.running = false;
 			this.closeTaskModals();
 		},

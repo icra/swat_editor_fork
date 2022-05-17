@@ -1,5 +1,5 @@
 from peewee import *
-from . import base
+from . import base, hru_parm_db
 
 
 class Recall_rec(base.BaseModel):
@@ -33,3 +33,17 @@ class Recall_dat(base.BaseModel):
 	lag = DoubleField()
 	gravel = DoubleField()
 	tmp = DoubleField()
+
+#ICRA Adrià Riu
+class Recall_pollutants_dat(base.BaseModel):
+	recall_rec = ForeignKeyField(Recall_rec, on_delete='CASCADE', related_name='data')
+	pollutants_pth = ForeignKeyField(hru_parm_db.Pollutants_pth, on_delete='CASCADE', related_name='data')
+	jday = IntegerField()
+	mo = IntegerField()
+	day_mo = IntegerField()
+	yr = IntegerField()
+	load = DoubleField()
+
+
+
+

@@ -17,6 +17,12 @@ from datetime import datetime
 
 import os.path
 
+#ICRA Adrià Riu
+from database.datasets import hru_parm_db as hru_db
+from database.datasets import base
+from database.project.setup import SetupProjectDatabase
+
+
 
 def check_config(project_db):
 	conn = lib.open_db(project_db)
@@ -33,6 +39,14 @@ def check_config(project_db):
 
 			if lib.exists_table(conn, 'plants_plt'):
 				lib.delete_table(project_db, 'plants_plt')
+
+		#ICRA Adrià Riu
+		if not lib.exists_table(conn, 'pollutants_pth'):
+			SetupProjectDatabase.init(project_db)
+			SetupProjectDatabase.create_tables()
+			#base.db.create_tables([hru_db.Pollutants_pth])
+
+
 
 
 def get_model_to_dict_dates(m, project_db):
@@ -54,21 +68,21 @@ class SetupApi(Resource):
 		parser.add_argument('project_db', type=str, required=True, location='json')
 		parser.add_argument('reference_db', type=str, required=True, location='json')
 		args = parser.parse_args(strict=False)
-		
+
 		project_db = utils.sanitize(args['project_db'])
 		reference_db = utils.sanitize(args['reference_db'])
-		
+
 		SetupProjectDatabase.init(project_db)
 		try:
 			m = Project_config.get()
-			
+
 			m.reference_db = utils.rel_path(project_db, args['reference_db'])
 			m.project_name = args['project_name']
 			result = m.save()
-			
+
 			if result > 0:
 				return 200
-			
+
 			abort(400, message="Unable to update project configuration table.")
 		except Project_config.DoesNotExist:
 			abort(404, message="Could not retrieve project configuration data.")
@@ -89,10 +103,10 @@ class ConfigApi(Resource):
 		parser.add_argument('name', type=str, required=True, location='json')
 		parser.add_argument('description', type=str, required=False, location='json')
 		args = parser.parse_args(strict=False)
-		
+
 		SetupProjectDatabase.init(project_db)
 		try:
-			m = Project_config.get()			
+			m = Project_config.get()
 			m.project_name = args['name']
 			result = m.save()
 
@@ -102,10 +116,10 @@ class ConfigApi(Resource):
 			else:
 				oc.name = args['name']
 			result = oc.save()
-			
+
 			if result > 0:
 				return 200
-			
+
 			abort(400, message="Unable to update project configuration table.")
 		except Project_config.DoesNotExist:
 			abort(404, message="Could not retrieve project configuration data.")
@@ -164,7 +178,7 @@ class InputFilesSettingsApi(Resource):
 		SetupProjectDatabase.init(project_db)
 		try:
 			m = Project_config.get()
-			
+
 			m.input_files_dir = utils.rel_path(project_db, args['input_files_dir'])
 			m.input_files_last_written = args['input_files_last_written']
 			result = m.save()
@@ -329,7 +343,7 @@ class RunInfoApi(Resource):
 
 		SetupProjectDatabase.init(project_db)
 		try:
-			m = Project_config.get()			
+			m = Project_config.get()
 			m.input_files_dir = utils.rel_path(project_db, args['input_files_dir'])
 			result = m.save()
 

@@ -7,6 +7,7 @@
 			</file-header>
 
 			<recall-form :item="item" :api-url="apiUrl" is-update allow-bulk-edit></recall-form>
+
 		</div>
 		<router-view></router-view>
 	</project-container>
@@ -79,9 +80,9 @@ export default {
 			} catch (error) {
 				this.page.error = this.logError(error, 'Unable to get project information from database.');
 			}
-			
+
 			this.page.loading = false;
 		}
 	}
 }
-</script> 
+</script>
