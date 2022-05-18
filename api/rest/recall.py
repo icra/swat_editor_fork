@@ -504,6 +504,9 @@ class RecallPollutantsDatListJoinApi(BaseRestModel):
 		per_page = self.get_arg(args, 'per_page', 50)
 
 		s = table.select().where(table.recall_rec_id == id)
+
+		#Falta aplicar paginacio, ara es mostren tots els registres
+		"""
 		total = s.count()
 
 		if sort == 'name':
@@ -514,8 +517,10 @@ class RecallPollutantsDatListJoinApi(BaseRestModel):
 				sort_val = SQL('[{}]'.format(sort)).desc()
 
 		m = s.order_by(sort_val).paginate(int(page), int(per_page))
-
 		items = [model_to_dict(v, recurse=False) for v in m]
+		"""
+
+		items = [model_to_dict(v, recurse=False) for v in s]
 
 		outerList = group_pollutants(project_db, items)
 

@@ -13,7 +13,7 @@
 				use-filter use-action-bar
 				default-sort="name"
 				use-dynamic-fields
-				show-import-export default-csv-file="pollutants.csv" table-name="path" />
+				show-import-export default-csv-file="pollutants.csv" table-name="poll" />
 		</div>
 		<router-view></router-view>
 	</project-container>

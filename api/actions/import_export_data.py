@@ -76,7 +76,7 @@ class ImportExportData(ExecutableApi):
 			self.table_name = 'rec_cnst'
 			self.table = table_mapper.types.get('rec_cnst', None)
 			self.export_csv()
-			
+
 
 	def import_csv(self):
 		if self.table_name == 'rec_dat':
@@ -99,6 +99,7 @@ class ImportExportData(ExecutableApi):
 			ignored_cols = []
 			initial_headers = []
 			custom_query = None
+
 			if self.table_name == 'rec_dat':
 				ignored_cols.append('recall_rec')
 				custom_query = self.table.select().where(self.table.recall_rec_id == self.related_id)
@@ -144,7 +145,7 @@ if __name__ == '__main__':
 	ignore_id = False if args.ignore_id == "n" else True
 
 	api = ImportExportData(args.file_name, args.table_name, args.db_file, del_ex, related_id, ignore_id, args.version, args.input_files_dir, args.rec_typ)
-	
+
 	if args.action == "import_csv":
 		api.import_csv()
 	elif args.action == "export_csv":

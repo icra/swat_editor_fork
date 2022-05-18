@@ -44,9 +44,9 @@
 					empty-message="Use the buttons above to add data."
 					default-csv-file="recall.csv" table-name="rec_dat"
 					:import-export-related-id="item.props.id" import-export-delete-existing />
+
 				<!-- ICRA Joan Saló  -->
 				<h2 class="my-3">Pollutants</h2>
-
 				<grid-view ref="dataGrid"
 						   :api-url="`recall_pollutants/data/items/join/${item.props.id}`"
 						   :delete-api-url="`recall_pollutants/data/item/${item.props.id}`"

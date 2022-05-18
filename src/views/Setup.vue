@@ -108,24 +108,24 @@
 							<b-col md="6">
 								<h5 class="mb-3">Status</h5>
 								<ul class="list-table-sm">
-									<li> 
+									<li>
 										<font-awesome-icon :icon="['fas', info.status.imported_weather ? 'check' : 'times']" :class="info.status.imported_weather ? 'text-success' : 'text-muted'" fixed-width />
 										<router-link to="/edit/stations" class="ml-1">Set up weather stations and weather generators</router-link>
 									</li>
-									<li> 
+									<li>
 										<font-awesome-icon :icon="['fas', info.status.wrote_inputs ? 'check' : 'times']" :class="info.status.wrote_inputs ? 'text-success' : 'text-muted'" fixed-width />
 										<router-link to="/run" class="ml-1">Wrote SWAT+ input files</router-link>
 									</li>
-									<li> 
+									<li>
 										<font-awesome-icon :icon="['fas', info.status.ran_swat ? 'check' : 'times']" :class="info.status.ran_swat ? 'text-success' : 'text-muted'" fixed-width />
 										<router-link to="/run" class="ml-1">Ran SWAT+</router-link>
 									</li>
-									<li> 
+									<li>
 										<font-awesome-icon :icon="['fas', info.status.imported_output ? 'check' : 'times']" :class="info.status.imported_output ? 'text-success' : 'text-muted'" fixed-width />
 										<router-link to="/run" class="ml-1">Imported SWAT+ output into a database for analysis</router-link>
 									</li>
 								</ul>
-								
+
 							</b-col>
 							<b-col md v-if="info.scenarios.length > 0">
 								<h5 class="mb-3">Saved scenarios</h5>
@@ -153,7 +153,7 @@
 											<td>
 												{{info.simulation.yrc_start}}
 												{{info.simulation.day_start > 0 ? 'day ' + info.simulation.day_start : ''}}
-												- 
+												-
 												{{info.simulation.yrc_end}}
 												{{info.simulation.day_end > 0 ? 'day ' + info.simulation.day_end : ''}}
 											</td>
@@ -239,11 +239,11 @@
 							<open-in-browser url="https://swatplus.gitbook.io/docs/installation"  text="install a compatible earlier version" />.
 						</p>
 						<p>
-							Your project database may be modified during the upgrade. We will make a backup of the database and store it in the Backups folder 
+							Your project database may be modified during the upgrade. We will make a backup of the database and store it in the Backups folder
 							within your project directory. There may be changes to the model inputs, so we recommend you <open-in-browser url="https://swatplus.gitbook.io/docs/release-notes"  text="read our full release notes" />
 							to see what has changed <strong>before</strong> upgrading your project.
 						</p>
-					</div>					
+					</div>
 				</section>
 			</div>
 			<action-bar>
@@ -257,11 +257,11 @@
 
 		<b-modal v-model="page.open.show" centered size="lg" title="Open a SWAT+ Editor Project">
 			<error-alert :text="page.open.error"></error-alert>
-			
+
 			<b-form>
 				<b-form-group label="Select your project/GIS SQLite database file">
 					<select-file-input v-model="page.open.projectDb" :value="page.open.projectDb"
-						fileType="sqlite" required 
+						fileType="sqlite" required
 						invalidFeedback="Please select a SQLite database file." />
 				</b-form-group>
 			</b-form>
@@ -285,7 +285,7 @@
 
 		<b-modal v-model="page.edit.show" centered size="lg" title="Update Project Name and Description">
 			<error-alert :text="page.edit.error"></error-alert>
-			
+
 			<b-form>
 				<b-form-group label="Project display name">
 						<b-form-input v-model="page.edit.name" required></b-form-input>
@@ -303,10 +303,10 @@
 		</b-modal>
 
 		<b-modal v-model="page.import.show" centered size="lg" title="SWAT+ Editor Project from QSWAT+" no-close-on-backdrop no-close-on-esc hide-header-close>
-			<error-alert :text="page.open.error"></error-alert>			
-			<error-alert :text="page.import.error"></error-alert>			
+			<error-alert :text="page.open.error"></error-alert>
+			<error-alert :text="page.import.error"></error-alert>
 			<stack-trace-error v-if="!isNullOrEmpty(task.error)" error-title="There was an error importing your GIS data." :stack-trace="task.error.toString()" />
-			
+
 			<div v-if="task.running">
 				<b-progress :value="task.progress.percent" :max="100"></b-progress>
 				<p>
@@ -329,7 +329,7 @@
 					</b-form-group>
 
 					<b-form-checkbox v-model="page.import.project.isLte" class="mt-4">
-						Use SWAT+ lte? This is a lite version of the model that greatly simplifies hydrology and plant growth and 
+						Use SWAT+ lte? This is a lite version of the model that greatly simplifies hydrology and plant growth and
 						does not simulate nutrients, concentrating on gully formation and stream degradation.
 					</b-form-checkbox>
 				</b-form>
@@ -342,7 +342,7 @@
 		</b-modal>
 
 		<b-modal v-model="page.loadScenario.show" size="lg" title="Load Scenario" no-close-on-backdrop no-close-on-esc hide-header-close>
-			<error-alert :text="page.loadScenario.error"></error-alert>			
+			<error-alert :text="page.loadScenario.error"></error-alert>
 			<stack-trace-error v-if="!isNullOrEmpty(task.error)" error-title="There was an error loading your scenario" :stack-trace="task.error.toString()" />
 
 			<div v-if="task.running">
@@ -354,8 +354,8 @@
 			<div v-else>
 				<p>
 					Are you sure you want to load the scenario, <strong>{{page.loadScenario.scenario.name}}</strong>?
-					Loading the scenario will <strong class="text-danger">replace</strong> everything currently loaded 
-					in the editor (the default scenario), so please make sure any changes are saved as a new scenario if you wish 
+					Loading the scenario will <strong class="text-danger">replace</strong> everything currently loaded
+					in the editor (the default scenario), so please make sure any changes are saved as a new scenario if you wish
 					to keep them. Scenarios can be saved from the <router-link to="/run">run model screen</router-link>.
 				</p>
 			</div>
@@ -368,7 +368,7 @@
 
 		<b-modal v-model="page.create.show" centered size="lg" title="Create a New SWAT+ Editor Project">
 			<stack-trace-error v-if="!isNullOrEmpty(task.error)" error-title="There was an error creating your project." :stack-trace="task.error.toString()" />
-			
+
 			<div v-if="task.running">
 				<b-progress :value="task.progress.percent" :max="100"></b-progress>
 				<p>
@@ -388,7 +388,7 @@
 				</p>
 
 				<error-alert :text="page.create.error"></error-alert>
-				
+
 				<b-form>
 					<b-form-group label="Project display name">
 						<b-form-input v-model="page.create.name" required></b-form-input>
@@ -405,17 +405,17 @@
 
 					<b-form-group label="Select your SWAT+ datasets SQLite database file">
 						<select-file-input v-model="page.create.datasetsDb" :value="page.create.datasetsDb"
-							fileType="sqlite" required 
+							fileType="sqlite" required
 							invalidFeedback="Please select a SQLite database file." />
 						<small class="form-text text-muted">
-							If you do not have an existing dataset, 
+							If you do not have an existing dataset,
 							<open-in-browser :url="datasets_online_url" text="download the newest version online" />.
 							We recommend placing it in your project folder.
 						</small>
 					</b-form-group>
 
 					<b-form-checkbox v-model="page.create.isLte" class="mt-4">
-						Use SWAT+ lte? This is a lite version of the model that greatly simplifies hydrology and plant growth and 
+						Use SWAT+ lte? This is a lite version of the model that greatly simplifies hydrology and plant growth and
 						does not simulate nutrients, concentrating on gully formation and stream degradation.
 					</b-form-checkbox>
 				</b-form>
@@ -429,7 +429,7 @@
 
 		<b-modal v-model="page.openConfirm.show" centered size="lg" title="Has your watershed changed?" no-close-on-backdrop no-close-on-esc hide-header-close>
 			<stack-trace-error v-if="!isNullOrEmpty(task.error)" error-title="There was an error re-importing your project GIS data." :stack-trace="task.error.toString()" />
-			
+
 			<div v-if="task.running">
 				<b-progress :value="task.progress.percent" :max="100"></b-progress>
 				<p>
@@ -439,7 +439,7 @@
 			<div v-else-if="isNullOrEmpty(task.error)">
 				<p>
 					Did you run steps 1 or 2 of QSWAT+ since last opening SWAT+ Editor?
-					If so, we'll need to re-import your watershed data. 
+					If so, we'll need to re-import your watershed data.
 				</p>
 			</div>
 
@@ -461,7 +461,7 @@
 		</b-modal>
 
 		<b-modal v-model="page.update.show" size="lg" title="Updating Project" no-close-on-backdrop no-close-on-esc hide-header-close>
-			<error-alert :text="page.update.error"></error-alert>			
+			<error-alert :text="page.update.error"></error-alert>
 			<stack-trace-error v-if="!isNullOrEmpty(task.error)" error-title="There was an error updating your project" :stack-trace="task.error.toString()" />
 
 			<div v-if="task.running">
@@ -600,7 +600,7 @@ export default {
 					await this.getInfo();
 					//this.versionSupport = this.getVersionSupport(this.currentProject.version);
 				}
-			}			
+			}
 		},
 		async sleep(ms) {
 			return new Promise(resolve => setTimeout(resolve, ms));
@@ -611,6 +611,7 @@ export default {
 
             try {
 				const response = await this.$http.get(`setup/info/${this.projectDbUrl}`);
+				console.log(response)
 				this.log(response.data);
 				this.info = response.data;
 				this.charts.landuse = this.getPieChart('Land use distribution', this.info.charts.landuse);
@@ -627,7 +628,7 @@ export default {
 					this.page.error = this.logError(error, 'Unable to get project information from database.');
 				}
 			}
-			
+
             this.page.loading = false;
 		},
 		openEditProject() {
@@ -654,7 +655,7 @@ export default {
 			} catch (error) {
 				this.page.edit.error = this.logError(error, 'Unable to save changes.');
 			}
-			
+
             this.page.edit.saving = false;
 		},
 		async openProject() {
@@ -696,7 +697,7 @@ export default {
 					this.page.open.error = this.logError(error, 'Unable to get project information from database.');
 				}
 			}
-			
+
             this.page.open.loading = false;
 		},
 		createProject() {
@@ -722,12 +723,12 @@ export default {
 				let lte = project.isLte ? 'y' : 'n';
 
 				let args = [
-					'setup_project', 
+					'setup_project',
 					'--project_db_file='+ project.projectDb,
-					'--datasets_db_file='+ project.datasetsDb, 
+					'--datasets_db_file='+ project.datasetsDb,
 					'--project_name='+ project.name,
 					'--editor_version='+ this.version,
-					'--is_lte=' + lte, 
+					'--is_lte=' + lte,
 					'--project_description='+ project.description
 				];
 
@@ -782,9 +783,9 @@ export default {
 		loadScenario() {
 			this.page.loadScenario.error = null;
 			this.page.loadScenario.running = true;
-			
+
 			let args = [
-				'load_scenario', 
+				'load_scenario',
 				'--project_db_file='+ this.currentProject.projectDb,
 				'--project_name='+ this.page.loadScenario.scenario.name
 			];
@@ -801,11 +802,11 @@ export default {
 				let lte = project.isLte ? 'y' : 'n';
 
 				let args = [
-					'setup_project', 
-					'--project_db_file='+ project.projectDb, 
+					'setup_project',
+					'--project_db_file='+ project.projectDb,
 					'--project_name='+ this.validName(project.name),
 					'--editor_version='+ this.version,
-					'--is_lte=' + lte, 
+					'--is_lte=' + lte,
 					'--project_description='+ this.validName(project.description)
 				];
 
@@ -818,8 +819,8 @@ export default {
 			this.page.update.running = true;
 
 			let args = [
-				'reimport_gis', 
-				'--project_db_file='+ project.projectDb, 
+				'reimport_gis',
+				'--project_db_file='+ project.projectDb,
 				'--project_name='+ project.name,
 				'--editor_version='+ this.version,
 				'--is_lte=' + lte
@@ -831,10 +832,10 @@ export default {
 			this.page.update.error = null;
 			this.page.update.show = true;
 			this.page.update.running = true;
-			
+
 			let args = [
-				'update_project', 
-				'--project_db_file='+ this.currentProject.projectDb, 
+				'update_project',
+				'--project_db_file='+ this.currentProject.projectDb,
 				'--editor_version='+ this.version,
 				'--update_project_values=n',
 				'--reimport_gis=n'
@@ -859,13 +860,13 @@ export default {
 			this.task.process.stdout.on('data', (data) => {
 				this.task.progress = this.getApiOutput(data);
 			});
-			
+
 			this.task.process.stderr.on('data', (data) => {
 				console.log(`stderr: ${data}`);
 				this.task.error = data;
 				this.task.running = false;
 			});
-			
+
 			this.task.process.on('close', (code) => {
 				if (this.isNullOrEmpty(this.task.error)) {
 					if (this.page.loadScenario.running) {
@@ -890,7 +891,7 @@ export default {
 			this.task.error = null;
 			if (this.task.process !== null)
 				this.task.process.kill();
-			
+
 			this.task.running = false;
 			this.closeTaskModals();
 		},

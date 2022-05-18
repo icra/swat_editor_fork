@@ -309,7 +309,6 @@ api.add_resource(recall.RecallDatApi, '/recall/data/item/' + get_params)
 #ICRA Joan Saló
 api.add_resource(recall.RecallPollutantsDatListApi, '/recall_pollutants/data/items/<id>/' + list_params)	#No es fa servir
 
-
 api.add_resource(recall.RecallPollutantsDatPostApi, '/recall_pollutants/data/item/' + post_params)
 api.add_resource(recall.RecallPollutantsDatListJoinApi, '/recall_pollutants/data/items/join/<id>/' + list_params)
 api.add_resource(recall.RecallPollutantsDatGetApi, '/recall_pollutants/data/item/' + get_2_id_params)

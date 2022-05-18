@@ -489,7 +489,6 @@ export default {
 			try {
 				let url = this.isNullOrEmpty(this.deleteApiUrl) ? this.apiUrl : this.deleteApiUrl;
 				const response = await this.$http.delete(`${url}/${this.page.delete.id}/${this.projectDbUrl}`);
-				console.log(response)
 				this.log(response);
 				this.page.delete.show = false;
 				this.table.currentPage = 1;
@@ -533,10 +532,12 @@ export default {
 				message: null
 			};
 
+
 			this.task.process = this.getApiProc('swatplus_api', args);
 
 			this.task.process.stdout.on('data', (data) => {
 				this.task.progress = this.getApiOutput(data);
+				console.log(this.task.progress)
 			});
 
 			this.task.process.stderr.on('data', (data) => {

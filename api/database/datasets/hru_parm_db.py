@@ -122,10 +122,6 @@ class Pathogens_pth(BaseModel):
 # ICRA Adrià Riu - Adding pollutants to the database
 class Pollutants_pth(BaseModel):
 	name = CharField(unique=True)
-	soil_ads = DoubleField()
-	frac_wash = DoubleField()
-	hl_foliage = DoubleField()
-	hl_soil = DoubleField()
 	solub = DoubleField()
 	aq_hlife = DoubleField()
 	aq_volat = DoubleField()
