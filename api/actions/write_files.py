@@ -56,84 +56,84 @@ class WriteFiles(ExecutableApi):
 			big_step = 5
 			bigger_step = 10
 			total = 0
-			#
-			# self.write_simulation(total, step)
-			# total += step
-			#
-			# self.write_climate(total, bigger_step)
-			# total += bigger_step
-			#
-			# self.copy_weather_files(total, step)
-			# total += step
-			#
-			# self.write_connect(total, step)
-			# total += step
-			#
-			# self.write_channel(total, step)
-			# total += step
-			#
-			# self.write_reservoir(total, step)
-			# total += step
-			#
-			# self.write_routing_unit(total, step)
-			# total += step
-			#
-			# self.write_hru(total, bigger_step)
-			# total += bigger_step
-			#
-			# self.write_dr(total, small_step)
-			# total += small_step
-			#
-			# self.write_aquifer(total, small_step)
-			# total += small_step
-			#
-			# self.write_herd(total, small_step)
-			# total += small_step
-			#
-			# self.write_water_rights(total, small_step)
-			# total += small_step
-			#
-			# self.write_link(total, small_step)
-			# total += small_step
-			#
-			# self.write_basin(total, small_step)
-			# total += small_step
-			#
-			# self.write_hydrology(total, step)
-			# total += step
-			#
-			# self.write_exco(total, step)
-			# total += step
-			#
-			# self.write_recall(total, step)
-			# total += step
-			#
-			# self.write_structural(total, step)
-			# total += step
-			#
-			# self.write_parm_db(total, step)
-			# total += step
-			#
-			# self.write_ops(total, step)
-			# total += step
-			#
-			# self.write_lum(total, step)
-			# total += step
-			#
-			# self.write_chg(total, step)
-			# total += step
-			#
-			# self.write_init(total, step)
-			# total += step
-			#
-			# self.write_soils(total, bigger_step)
-			# total += bigger_step
-			#
-			# self.write_decision_table(total, step)
-			# total += step
-			#
-			# self.write_regions(total, step)
-			# total += step
+
+			self.write_simulation(total, step)
+			total += step
+
+			self.write_climate(total, bigger_step)
+			total += bigger_step
+
+			self.copy_weather_files(total, step)
+			total += step
+
+			self.write_connect(total, step)
+			total += step
+
+			self.write_channel(total, step)
+			total += step
+
+			self.write_reservoir(total, step)
+			total += step
+
+			self.write_routing_unit(total, step)
+			total += step
+
+			self.write_hru(total, bigger_step)
+			total += bigger_step
+
+			self.write_dr(total, small_step)
+			total += small_step
+
+			self.write_aquifer(total, small_step)
+			total += small_step
+
+			self.write_herd(total, small_step)
+			total += small_step
+
+			self.write_water_rights(total, small_step)
+			total += small_step
+
+			self.write_link(total, small_step)
+			total += small_step
+
+			self.write_basin(total, small_step)
+			total += small_step
+
+			self.write_hydrology(total, step)
+			total += step
+
+			self.write_exco(total, step)
+			total += step
+
+			self.write_recall(total, step)
+			total += step
+
+			self.write_structural(total, step)
+			total += step
+
+			self.write_parm_db(total, step)
+			total += step
+
+			self.write_ops(total, step)
+			total += step
+
+			self.write_lum(total, step)
+			total += step
+
+			self.write_chg(total, step)
+			total += step
+
+			self.write_init(total, step)
+			total += step
+
+			self.write_soils(total, bigger_step)
+			total += bigger_step
+
+			self.write_decision_table(total, step)
+			total += step
+
+			self.write_regions(total, step)
+			total += step
 
 			#ICRA Adrià Riu
 			self.write_pollutants(total, step)
