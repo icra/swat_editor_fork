@@ -215,7 +215,8 @@ class SetupDatasetsDatabase():
 			{'id': 27, 'name': 'tmp_path'},
 			{'id': 28, 'name': 'slr_path'},
 			{'id': 29, 'name': 'hmd_path'},
-			{'id': 30, 'name': 'wnd_path'}
+			{'id': 30, 'name': 'wnd_path'},
+			{'id': 31, 'name': 'pollutants'}
 		]
 
 		file_cio = [
@@ -391,7 +392,10 @@ class SetupDatasetsDatabase():
 			{'classification': 25, 'order_in_class': 14, 'default_file_name': 'res_reg.def', 'database_table': 'res_reg_def', 'is_core_file': False},
 			{'classification': 25, 'order_in_class': 15, 'default_file_name': 'rec_catunit.ele', 'database_table': 'rec_catunit_ele', 'is_core_file': False},
 			{'classification': 25, 'order_in_class': 16, 'default_file_name': 'rec_catunit.def', 'database_table': 'rec_catunit_def', 'is_core_file': False},
-			{'classification': 25, 'order_in_class': 17, 'default_file_name': 'rec_reg.def', 'database_table': 'rec_reg_def', 'is_core_file': False}
+			{'classification': 25, 'order_in_class': 17, 'default_file_name': 'rec_reg.def', 'database_table': 'rec_reg_def', 'is_core_file': False},
+
+			{'classification': 31, 'order_in_class': 1, 'default_file_name': 'pollutants.def', 'database_table': 'pollutants_pth', 'is_core_file': False},
+			{'classification': 31, 'order_in_class': 2, 'default_file_name': 'pollutants_om.exc', 'database_table': 'recall_pollutants_dat', 'is_core_file': False}
 		]
 
 		print_prt_objects = [

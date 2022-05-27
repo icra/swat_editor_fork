@@ -6,7 +6,7 @@ from database.project.config import Project_config
 from database.project.config import File_cio as project_file_cio, File_cio_classification
 from database.project.climate import Weather_file
 
-from fileio import connect, exco, dr, recall, climate, channel, aquifer, hydrology, reservoir, hru, lum, soils, init, routing_unit, regions, simulation, hru_parm_db, config, ops, structural, decision_table, basin, change
+from fileio import connect, exco, pollutants, dr, recall, climate, channel, aquifer, hydrology, reservoir, hru, lum, soils, init, routing_unit, regions, simulation, hru_parm_db, config, ops, structural, decision_table, basin, change
 from helpers import utils
 
 import sys
@@ -26,14 +26,14 @@ class WriteFiles(ExecutableApi):
 
 		try:
 			config = Project_config.get()
-			
+
 			input_files_dir = utils.full_path(project_db_file, config.input_files_dir).replace("\\","/")
 			if not os.path.exists(input_files_dir):
 				try:
 					os.makedirs(input_files_dir)
 				except IOError:
 					sys.exit('The input files directory {dir} does not exist. Please select a valid path and try again.'.format(dir=input_files_dir))
-			
+
 			weather_data_dir = None
 			if config.weather_data_dir is not None:
 				weather_data_dir = utils.full_path(project_db_file, config.weather_data_dir).replace("\\","/")
@@ -56,83 +56,87 @@ class WriteFiles(ExecutableApi):
 			big_step = 5
 			bigger_step = 10
 			total = 0
+			#
+			# self.write_simulation(total, step)
+			# total += step
+			#
+			# self.write_climate(total, bigger_step)
+			# total += bigger_step
+			#
+			# self.copy_weather_files(total, step)
+			# total += step
+			#
+			# self.write_connect(total, step)
+			# total += step
+			#
+			# self.write_channel(total, step)
+			# total += step
+			#
+			# self.write_reservoir(total, step)
+			# total += step
+			#
+			# self.write_routing_unit(total, step)
+			# total += step
+			#
+			# self.write_hru(total, bigger_step)
+			# total += bigger_step
+			#
+			# self.write_dr(total, small_step)
+			# total += small_step
+			#
+			# self.write_aquifer(total, small_step)
+			# total += small_step
+			#
+			# self.write_herd(total, small_step)
+			# total += small_step
+			#
+			# self.write_water_rights(total, small_step)
+			# total += small_step
+			#
+			# self.write_link(total, small_step)
+			# total += small_step
+			#
+			# self.write_basin(total, small_step)
+			# total += small_step
+			#
+			# self.write_hydrology(total, step)
+			# total += step
+			#
+			# self.write_exco(total, step)
+			# total += step
+			#
+			# self.write_recall(total, step)
+			# total += step
+			#
+			# self.write_structural(total, step)
+			# total += step
+			#
+			# self.write_parm_db(total, step)
+			# total += step
+			#
+			# self.write_ops(total, step)
+			# total += step
+			#
+			# self.write_lum(total, step)
+			# total += step
+			#
+			# self.write_chg(total, step)
+			# total += step
+			#
+			# self.write_init(total, step)
+			# total += step
+			#
+			# self.write_soils(total, bigger_step)
+			# total += bigger_step
+			#
+			# self.write_decision_table(total, step)
+			# total += step
+			#
+			# self.write_regions(total, step)
+			# total += step
 
-			self.write_simulation(total, step)
-			total += step
-
-			self.write_climate(total, bigger_step)
-			total += bigger_step
-
-			self.copy_weather_files(total, step)
-			total += step
-
-			self.write_connect(total, step)
-			total += step
-
-			self.write_channel(total, step)
-			total += step
-
-			self.write_reservoir(total, step)
-			total += step
-
-			self.write_routing_unit(total, step)
-			total += step
-
-			self.write_hru(total, bigger_step)
-			total += bigger_step
-
-			self.write_dr(total, small_step)
-			total += small_step
-
-			self.write_aquifer(total, small_step)
-			total += small_step
-
-			self.write_herd(total, small_step)
-			total += small_step
-
-			self.write_water_rights(total, small_step)
-			total += small_step
-
-			self.write_link(total, small_step)
-			total += small_step
-
-			self.write_basin(total, small_step)
-			total += small_step
-
-			self.write_hydrology(total, step)
-			total += step
-
-			self.write_exco(total, step)
-			total += step
-
-			self.write_recall(total, step)
-			total += step
-
-			self.write_structural(total, step)
-			total += step
-
-			self.write_parm_db(total, step)
-			total += step
-
-			self.write_ops(total, step)
-			total += step
-
-			self.write_lum(total, step)
-			total += step
-
-			self.write_chg(total, step)
-			total += step
-
-			self.write_init(total, step)
-			total += step
-
-			self.write_soils(total, bigger_step)
-			total += bigger_step
-
-			self.write_decision_table(total, step)
-			total += step
-
-			self.write_regions(total, step)
+			#ICRA Adrià Riu
+			self.write_pollutants(total, step)
 			total += step
 
 			self.update_file_status(total, "file.cio")
@@ -552,6 +556,26 @@ class WriteFiles(ExecutableApi):
 		if field_fld_file != NULL_FILE:
 			self.update_file_status(start_prog + 5, field_fld_file)
 			hydrology.Field_fld(os.path.join(self.__dir, field_fld_file), self.__version, self.__swat_version).write()
+
+	#ICRA Adrià Riu
+	def write_pollutants(self, start_prog, allocated_prog):
+		num_files = 1
+		files = self.get_file_names("pollutants", num_files)
+
+		prog_step = round(allocated_prog / num_files)
+		prog = start_prog
+
+		pollutants_def_file = files[0].strip()
+		if pollutants_def_file != NULL_FILE:
+			self.update_file_status(prog, pollutants_def_file)
+			pollutants.Exco_pollutants_exc(os.path.join(self.__dir, pollutants_def_file), self.__version, self.__swat_version).write()
+
+		prog += prog_step
+		exco_om_file = files[1].strip()
+		if exco_om_file != NULL_FILE:
+			self.update_file_status(prog, exco_om_file)
+			pollutants.Pollutants_om_exc(os.path.join(self.__dir, exco_om_file), self.__version, self.__swat_version).write()
+			# exco.Exco_om_exc(os.path.join(self.__dir, exco_om_file), self.__version, self.__swat_version).write()
 
 	def write_exco(self, start_prog, allocated_prog):
 		num_files = 6
