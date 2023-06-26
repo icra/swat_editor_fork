@@ -8,6 +8,7 @@ module.exports = {
         'eslint:recommended'
     ],
     rules: {
+		'vue/no-mutating-props': 0,
 		'vue/no-unused-components': 0,
 		'no-unused-vars': 0,
         'no-console': 0,
