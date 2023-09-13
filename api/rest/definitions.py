@@ -10,6 +10,9 @@ vardef_db = 'swatplus_vardefs.sqlite'
 
 class VarRangeApi(Resource):
 	def get(self, table, db_path):
+
+
+
 		SetupVardefsDatabase.init(os.path.join(db_path, vardef_db))
 		m = Var_range.select().where((Var_range.table == table) & (Var_range.disabled == False))
 		values = {}

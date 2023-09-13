@@ -9,10 +9,10 @@
 
 		<edit-form show-description show-range is-update get-datasets-record allow-bulk-edit
 			:item="item"
-			name="Pesticides" table="path" no-gis
+			name="Pollutants" table="poll" no-gis
 			:vars="vars"
 			api-url="db/pollutants"
-			redirect-route="Pathogens" />
+			redirect-route="Pollutants" />
 	</project-container>
 </template>
 
@@ -20,7 +20,7 @@
 import EditForm from '@/components/EditForm';
 
 export default {
-	name: 'PathogensEdit',
+	name: 'PollutantsEdit',
 	components: {
 		EditForm
 	},
@@ -55,6 +55,12 @@ export default {
 
 				const response2 = await this.$http.get(`vars/${this.paths.vars}/${this.appPath}`);
 				this.vars = response2.data;
+
+				console.log(this.item)
+				console.log(this.vars)
+				console.log(this.paths.vars)
+				console.log(this.appPath)
+
 			} catch (error) {
 				this.page.error = this.logError(error, 'Unable to get project information from database.');
 			}

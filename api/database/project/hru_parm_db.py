@@ -130,6 +130,7 @@ class Pollutants_pth(base.BaseModel):
 	ben_act_dep = DoubleField()
 	ben_bury = DoubleField()
 	ben_hlife = DoubleField()
+	soil_ads = DoubleField()
 	description = TextField(null=True)
 
 
