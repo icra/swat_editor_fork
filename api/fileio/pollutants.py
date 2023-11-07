@@ -1,3 +1,5 @@
+#ICRA Adrià Riu
+
 from .base import BaseFileModel, FileColumn as col
 from helpers import utils
 from database.project.recall import Recall_pollutants_dat, Recall_rec
@@ -54,7 +56,9 @@ class Pollutants_om_exc(BaseFileModel):
 						file.write(utils.num_pad(rec.mo))
 						file.write(utils.num_pad(rec.day_mo))
 						file.write(utils.num_pad(rec.yr))
-						file.write(utils.num_pad(rec.load))
+
+						decimal_places = len(str(float_number).split('.')[1])
+						file.write(utils.num_pad(rec.load, decimals = decimal_places))
 						file.write("\n")
 
 
