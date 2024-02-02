@@ -1,6 +1,6 @@
 # README #
 
-Desktop interface to SWAT+ allowing the user to import a project from GIS, modify SWAT+ input, write the text files, and run the model.
+Custom Desktop interface to SWAT+ allowing the user to import a project from GIS, modify SWAT+ input, write the text files, and run a [custom SWAT+ model](https://github.com/icra/swatplus) that can model point-source pollution.
 
 Read the documentation at [swatplus.gitbook.io/docs](https://swatplus.gitbook.io/docs) and [join the user group](https://groups.google.com/g/swatplus-editor) to be notified of new releases.
 
